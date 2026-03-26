@@ -5,266 +5,443 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMIC-Sepsis: A Curated Benchmark for Modeling and Learning from Sepsis Trajectories in the ICU</title>
     <meta name="description" content="MIMIC-Sepsis provides a curated benchmark dataset of 35,239 ICU patients for sepsis trajectory modeling using MIMIC-IV.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a56db;
-            --primary-dark: #1e40af;
-            --accent: #e74c3c;
-            --bg: #fafafa;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --code-bg: #f3f4f6;
-            --section-bg: #f0f4ff;
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --primary-dark: #0d5f58;
+            --primary-bg: #f0fdfa;
+            --accent: #dc2626;
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+            --radius: 10px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: var(--text);
             background: var(--bg);
             line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Hero */
-        .hero {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #1a56db 100%);
-            color: white;
-            padding: 80px 0 60px;
-            text-align: center;
-        }
-        .hero .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 16px;
-        }
-        .hero .subtitle {
-            font-size: 1.15rem;
-            opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 28px;
-        }
-        .hero .authors {
-            font-size: 1.05rem;
-            margin-bottom: 8px;
-        }
-        .hero .venue {
-            font-size: 0.95rem;
-            opacity: 0.8;
-            margin-bottom: 32px;
-        }
-        .hero .buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-        .hero .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .btn-white { background: white; color: var(--primary-dark); }
-        .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.5); }
-        .btn-outline:hover { border-color: white; }
-
-        /* Layout */
-        .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-        section { padding: 60px 0; }
-        section:nth-child(even) { background: var(--section-bg); }
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--primary-dark);
-        }
-        h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 20px 0 10px;
-        }
-        p { margin-bottom: 16px; }
-
-        /* Stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin: 24px 0;
-        }
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-        }
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary);
-            display: block;
-        }
-        .stat-card .label {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        /* Tables */
-        .table-wrap { overflow-x: auto; margin: 16px 0; }
-        table {
+        /* ─── Nav ─── */
+        nav {
+            position: fixed;
+            top: 0;
             width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            font-size: 0.92rem;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 0 24px;
         }
-        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--primary-dark); color: white; font-weight: 600; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f9fafb; }
-        td.best { font-weight: 700; color: var(--primary); }
-
-        /* Pipeline */
-        .pipeline {
+        nav .nav-inner {
+            max-width: 1120px;
+            margin: 0 auto;
             display: flex;
-            gap: 0;
-            align-items: stretch;
-            margin: 24px 0;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
         }
-        .pipeline-step {
-            flex: 1;
-            min-width: 200px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            position: relative;
+        nav .logo {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        nav .nav-links { display: flex; gap: 28px; }
+        nav .nav-links a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        nav .nav-links a:hover { color: var(--primary); }
+
+        /* ─── Hero ─── */
+        .hero {
+            padding: 140px 24px 80px;
             text-align: center;
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--bg) 100%);
         }
-        .pipeline-step .step-num {
+        .hero .container { max-width: 780px; margin: 0 auto; }
+        .hero .badge {
             display: inline-block;
             background: var(--primary);
             color: white;
-            width: 32px;
-            height: 32px;
-            line-height: 32px;
-            border-radius: 50%;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.03em;
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -0.025em;
+            color: var(--text);
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 12px;
+            line-height: 1.7;
+        }
+        .hero .authors {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .hero .venue {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 36px;
+        }
+        .hero .buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow); }
+        .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border-light); box-shadow: var(--shadow-sm); }
+
+        /* ─── Layout ─── */
+        .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 80px 0; }
+        .section-alt { background: var(--surface); }
+        .section-header {
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto 48px;
+        }
+        .section-header .label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
             margin-bottom: 10px;
         }
-        .pipeline-step h4 { font-size: 1rem; margin-bottom: 6px; }
-        .pipeline-step p { font-size: 0.85rem; color: var(--text-light); margin: 0; }
-        .pipeline-arrow {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            color: var(--primary);
-            padding: 0 8px;
-            font-weight: 700;
+        h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
         }
-
-        /* Cards grid */
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-        }
-        .card h4 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-        .card p { font-size: 0.9rem; color: var(--text-light); margin: 0; }
-
-        /* Abstract */
-        .abstract-box {
-            background: var(--card-bg);
-            border-left: 4px solid var(--primary);
-            padding: 24px 28px;
-            border-radius: 0 12px 12px 0;
+        .section-header p {
+            color: var(--text-secondary);
             font-size: 1.02rem;
-            line-height: 1.8;
+        }
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 32px 0 14px;
+            color: var(--text);
         }
 
-        /* Code block */
-        .code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 16px 20px;
-            border-radius: 8px;
-            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
+        /* ─── Abstract ─── */
+        .abstract {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .abstract strong { color: var(--text); }
+
+        /* ─── Stats ─── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 40px 0;
+        }
+        .stat {
+            background: var(--bg);
+            padding: 28px 16px;
+            text-align: center;
+        }
+        .stat .value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+        .stat .desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ─── Figure ─── */
+        .figure {
+            margin: 40px 0;
+            text-align: center;
+        }
+        .figure img {
+            max-width: 100%;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+        .figure figcaption {
+            margin-top: 14px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
             line-height: 1.6;
         }
+        .figure figcaption strong {
+            color: var(--text);
+        }
 
-        /* Feature list */
-        .feature-list { list-style: none; padding: 0; }
-        .feature-list li {
-            padding: 8px 0 8px 28px;
+        /* ─── Cards ─── */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: var(--shadow); }
+        .card .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+        }
+        .card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .card p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* ─── Tables ─── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        th {
+            padding: 12px 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 11px 18px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        tr:last-child td { border-bottom: none; }
+        td.best {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ─── Pipeline steps ─── */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 32px 0;
+            position: relative;
+        }
+        .pipeline::before {
+            content: '';
+            position: absolute;
+            top: 32px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .pipe-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .pipe-step .num {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0 auto 14px;
+            box-shadow: 0 0 0 4px white;
+        }
+        .pipe-step h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .pipe-step p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* ─── Feature list ─── */
+        .findings { list-style: none; padding: 0; margin: 20px 0; }
+        .findings li {
+            padding: 10px 0 10px 32px;
             position: relative;
             font-size: 0.95rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-light);
         }
-        .feature-list li::before {
-            content: "\2713";
+        .findings li:last-child { border-bottom: none; }
+        .findings li::before {
+            content: '';
             position: absolute;
-            left: 0;
-            color: var(--primary);
-            font-weight: 700;
+            left: 4px;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-light);
         }
+        .findings li strong { color: var(--text); }
 
-        /* Footer */
+        /* ─── Code ─── */
+        .code-block {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 24px 28px;
+            border-radius: var(--radius);
+            font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+            font-size: 0.82rem;
+            overflow-x: auto;
+            line-height: 1.7;
+        }
+        .code-block .comment { color: #64748b; }
+
+        /* ─── Footer ─── */
         footer {
-            background: #1e293b;
-            color: #94a3b8;
+            border-top: 1px solid var(--border);
             padding: 40px 0;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
         }
-        footer a { color: #60a5fa; text-decoration: none; }
+        footer a { color: var(--primary); text-decoration: none; font-weight: 500; }
         footer a:hover { text-decoration: underline; }
+        footer .links { display: flex; gap: 24px; justify-content: center; margin-bottom: 12px; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 1.75rem; }
-            .hero { padding: 50px 0 40px; }
-            section { padding: 40px 0; }
-            .pipeline { flex-direction: column; gap: 12px; }
-            .pipeline-arrow { transform: rotate(90deg); justify-content: center; padding: 4px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        /* ─── Responsive ─── */
+        @media (max-width: 900px) {
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .pipeline { grid-template-columns: repeat(2, 1fr); }
+            .pipeline::before { display: none; }
+        }
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.85rem; }
+            .hero { padding: 110px 24px 50px; }
+            section { padding: 50px 0; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .pipeline { grid-template-columns: 1fr; }
+            nav .nav-links { gap: 16px; }
+            nav .nav-links a { font-size: 0.8rem; }
+            h2 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">MIMIC-Sepsis</a>
+        <div class="nav-links">
+            <a href="#dataset">Dataset</a>
+            <a href="#pipeline">Pipeline</a>
+            <a href="#results">Results</a>
+            <a href="#start">Get Started</a>
+            <a href="https://arxiv.org/abs/2510.24500" target="_blank">Paper</a>
+            <a href="https://github.com/yongh7/MIMIC-sepsis" target="_blank">GitHub</a>
+        </div>
+    </div>
+</nav>
+
 <!-- Hero -->
 <header class="hero">
     <div class="container">
-        <h1>MIMIC-Sepsis</h1>
-        <p class="subtitle">A Curated Benchmark for Modeling and Learning from Sepsis Trajectories in the ICU</p>
-        <p class="authors"><strong>Yong Huang</strong>, Zhongqi Yang, Amir M. Rahmani</p>
-        <p class="venue">IEEE-EMBS International Conference on Biomedical and Health Informatics (BHI) 2025</p>
+        <div class="badge">IEEE-EMBS BHI 2025</div>
+        <h1><span>MIMIC-Sepsis:</span> A Curated Benchmark for Modeling Sepsis Trajectories in the ICU</h1>
+        <p class="subtitle">A transparent, reproducible pipeline and benchmark framework for sepsis prediction using 35,239 ICU patients from MIMIC-IV.</p>
+        <p class="authors">Yong Huang &middot; Zhongqi Yang &middot; Amir M. Rahmani</p>
+        <p class="venue">IEEE-EMBS International Conference on Biomedical and Health Informatics 2025</p>
         <div class="buttons">
-            <a href="https://arxiv.org/abs/2510.24500" class="btn btn-white" target="_blank">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                Paper (arXiv)
+            <a href="https://arxiv.org/abs/2510.24500" class="btn btn-primary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Read Paper
             </a>
-            <a href="https://github.com/yongh7/MIMIC-sepsis" class="btn btn-outline" target="_blank">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                Code (GitHub)
+            <a href="https://github.com/yongh7/MIMIC-sepsis" class="btn btn-secondary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                View Code
             </a>
         </div>
     </div>
@@ -273,8 +450,10 @@
 <!-- Abstract -->
 <section>
     <div class="container">
-        <h2>Abstract</h2>
-        <div class="abstract-box">
+        <div class="section-header">
+            <div class="label">Abstract</div>
+        </div>
+        <div class="abstract">
             We present <strong>MIMIC-Sepsis</strong>, a curated cohort derived from MIMIC-IV containing
             <strong>35,239 ICU patients</strong> with time-aligned clinical variables and standardized treatment data.
             We describe a transparent preprocessing pipeline based on <strong>Sepsis-3 criteria</strong> and release
@@ -285,119 +464,132 @@
     </div>
 </section>
 
-<!-- Key Statistics -->
-<section>
+<!-- Dataset -->
+<section class="section-alt" id="dataset">
     <div class="container">
-        <h2>Dataset at a Glance</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="number">35,239</span>
-                <span class="label">ICU Patients</span>
+        <div class="section-header">
+            <div class="label">Dataset</div>
+            <h2>Dataset at a Glance</h2>
+            <p>A comprehensive sepsis cohort with rich clinical variables, treatment data, and multiple outcome labels.</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat"><div class="value">35,239</div><div class="desc">ICU Patients</div></div>
+            <div class="stat"><div class="value">90+</div><div class="desc">Clinical Variables</div></div>
+            <div class="stat"><div class="value">4h</div><div class="desc">Timestep Resolution</div></div>
+            <div class="stat"><div class="value">4</div><div class="desc">Benchmark Tasks</div></div>
+            <div class="stat"><div class="value">3</div><div class="desc">Model Architectures</div></div>
+        </div>
+
+        <div class="grid-3">
+            <div class="card">
+                <div class="icon">&#x1F9EC;</div>
+                <h4>Population</h4>
+                <p>Mean age 65.4 &plusmn; 16.3 years &middot; 44.5% female &middot; Median Charlson Index 5.0 [IQR 3.0&ndash;7.0]</p>
             </div>
-            <div class="stat-card">
-                <span class="number">90+</span>
-                <span class="label">Clinical Variables</span>
+            <div class="card">
+                <div class="icon">&#x1F4CA;</div>
+                <h4>Outcomes</h4>
+                <p>14.5% hospital mortality &middot; 25.1% 90-day mortality &middot; 12.4% septic shock &middot; 7.3% readmission rate</p>
             </div>
-            <div class="stat-card">
-                <span class="number">4h</span>
-                <span class="label">Timestep Resolution</span>
-            </div>
-            <div class="stat-card">
-                <span class="number">4</span>
-                <span class="label">Benchmark Tasks</span>
-            </div>
-            <div class="stat-card">
-                <span class="number">3</span>
-                <span class="label">Model Architectures</span>
+            <div class="card">
+                <div class="icon">&#x1F489;</div>
+                <h4>Interventions</h4>
+                <p>35.1% mechanically ventilated &middot; 16.9% vasopressors &middot; 66.3% received antibiotics</p>
             </div>
         </div>
 
-        <h3>Cohort Demographics</h3>
-        <div class="cards">
-            <div class="card">
-                <h4>Population</h4>
-                <p>Mean age 65.4 &plusmn; 16.3 years &middot; 44.5% female &middot; Median Charlson Index 5.0</p>
-            </div>
-            <div class="card">
-                <h4>Outcomes</h4>
-                <p>14.5% hospital mortality &middot; 25.1% 90-day mortality &middot; 12.4% septic shock &middot; 7.3% readmission</p>
-            </div>
-            <div class="card">
-                <h4>Interventions</h4>
-                <p>35.1% mechanically ventilated &middot; 16.9% vasopressors &middot; 66.3% antibiotics</p>
-            </div>
-        </div>
+        <!-- Figure 2: Clinical Parameters -->
+        <figure class="figure">
+            <img src="fig2_clinical_parameters.png" alt="Key Clinical Parameters Across Organ Systems" loading="lazy">
+            <figcaption><strong>Figure 1.</strong> Key clinical parameters across organ systems. Each panel shows the distribution of a key parameter using boxplots and violin plots. The correlation heatmap (bottom right) displays relationships between parameters.</figcaption>
+        </figure>
     </div>
 </section>
 
 <!-- Motivation -->
 <section>
     <div class="container">
-        <h2>Motivation</h2>
-        <p>
-            Sepsis causes approximately <strong>48.9 million cases</strong> and <strong>11 million deaths annually</strong>
-            worldwide, representing 20% of global deaths. Despite advances in machine learning for critical care,
-            existing sepsis prediction research faces three key challenges:
-        </p>
-        <div class="cards">
+        <div class="section-header">
+            <div class="label">Motivation</div>
+            <h2>Why MIMIC-Sepsis?</h2>
+            <p>Sepsis causes 48.9 million cases and 11 million deaths annually. Existing ML research faces key challenges.</p>
+        </div>
+        <div class="grid-3">
             <div class="card">
+                <div class="icon">&#x23F3;</div>
                 <h4>Outdated Datasets</h4>
                 <p>Most studies rely on MIMIC-III, which may not reflect current ICU practices and treatment protocols.</p>
             </div>
             <div class="card">
+                <div class="icon">&#x1F504;</div>
                 <h4>Inconsistent Preprocessing</h4>
                 <p>Ad-hoc, poorly documented data curation makes results difficult to reproduce and compare across studies.</p>
             </div>
             <div class="card">
+                <div class="icon">&#x1F4A7;</div>
                 <h4>Missing Treatment Data</h4>
-                <p>Clinical interventions (vasopressors, fluids, antibiotics) are frequently overlooked in trajectory analyses despite their critical influence on patient outcomes.</p>
+                <p>Vasopressors, fluids, and antibiotics are frequently overlooked despite their critical influence on outcomes.</p>
             </div>
         </div>
+
+        <!-- Figure 3: Treatment Outcomes -->
+        <figure class="figure">
+            <img src="fig3_treatment_outcomes.png" alt="Association between treatment interventions and hospital mortality" loading="lazy">
+            <figcaption><strong>Figure 2.</strong> Association between treatment interventions and hospital mortality. Upper panels compare mortality rates by treatment group; lower panels analyze the impact of early (&le;6h) versus late (&gt;6h) administration timing.</figcaption>
+        </figure>
     </div>
 </section>
 
 <!-- Pipeline -->
-<section>
+<section class="section-alt" id="pipeline">
     <div class="container">
-        <h2>Data Processing Pipeline</h2>
-        <p>A four-stage, fully reproducible pipeline transforms raw MIMIC-IV data into model-ready trajectories:</p>
+        <div class="section-header">
+            <div class="label">Method</div>
+            <h2>Data Processing Pipeline</h2>
+            <p>A four-stage, fully reproducible pipeline transforms raw MIMIC-IV data into model-ready trajectories.</p>
+        </div>
+
         <div class="pipeline">
-            <div class="pipeline-step">
-                <div class="step-num">1</div>
+            <div class="pipe-step">
+                <div class="num">1</div>
                 <h4>Data Extraction</h4>
-                <p>SQL queries extract vitals, labs, medications, fluids, cultures from PostgreSQL</p>
+                <p>SQL queries extract vitals, labs, medications, fluids, and cultures from PostgreSQL</p>
             </div>
-            <div class="pipeline-arrow">&rarr;</div>
-            <div class="pipeline-step">
-                <div class="step-num">2</div>
+            <div class="pipe-step">
+                <div class="num">2</div>
                 <h4>Preprocessing</h4>
                 <p>Merge records, resolve IDs, identify infection onset via Sepsis-3 criteria</p>
             </div>
-            <div class="pipeline-arrow">&rarr;</div>
-            <div class="pipeline-step">
-                <div class="step-num">3</div>
+            <div class="pipe-step">
+                <div class="num">3</div>
                 <h4>Trajectory Formatting</h4>
                 <p>Build 4h-interval time series with SOFA, SIRS, P/F ratio, and shock flags</p>
             </div>
-            <div class="pipeline-arrow">&rarr;</div>
-            <div class="pipeline-step">
-                <div class="step-num">4</div>
+            <div class="pipe-step">
+                <div class="num">4</div>
                 <h4>Benchmarking</h4>
                 <p>Train Linear, LSTM, and Transformer models across 4 clinical tasks</p>
             </div>
         </div>
 
+        <!-- Figure 1: Pipeline -->
+        <figure class="figure">
+            <img src="fig1_pipeline.png" alt="Cohort selection and data processing workflow" loading="lazy">
+            <figcaption><strong>Figure 3.</strong> Cohort selection and data processing workflow. Illustrates the high-level approach used to extract and process sepsis-related data from MIMIC-IV.</figcaption>
+        </figure>
+
         <h3>Sepsis-3 Definition</h3>
-        <p>
-            <strong>Infection onset</strong> is identified as the earliest timepoint where antibiotic administration
-            occurs within 24 hours before a positive culture, or a culture is obtained within 72 hours before antibiotic
-            administration. <strong>Sepsis</strong> is defined as a SOFA score increase &ge; 2 from baseline in the
-            presence of infection. <strong>Septic shock</strong> requires adequate fluid resuscitation (&ge; 2000 mL
-            in prior 12h), MAP &lt; 65 mmHg, vasopressor requirement, and lactate &gt; 2 mmol/L.
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+            <strong>Infection onset</strong> is the earliest timepoint where antibiotic administration occurs within
+            24h before a positive culture, or a culture is obtained within 72h before antibiotic administration.
+            <strong>Sepsis</strong> is defined as SOFA score increase &ge; 2 from baseline in the presence of infection.
+            <strong>Septic shock</strong> requires fluid resuscitation &ge; 2000 mL in prior 12h, MAP &lt; 65 mmHg,
+            vasopressor requirement, and lactate &gt; 2 mmol/L.
         </p>
 
         <h3>Clinical Variables</h3>
-        <div class="cards">
+        <div class="grid-2" style="margin-top: 16px;">
             <div class="card">
                 <h4>Vital Signs (46)</h4>
                 <p>Heart rate, blood pressure (systolic, diastolic, mean), respiratory rate, SpO2, temperature, ventilator parameters</p>
@@ -421,53 +613,32 @@
 <!-- Benchmark Tasks -->
 <section>
     <div class="container">
-        <h2>Benchmark Tasks</h2>
-        <p>Four predictive tasks reflect real-world challenges in sepsis care, grouped by temporal structure:</p>
+        <div class="section-header">
+            <div class="label">Tasks</div>
+            <h2>Benchmark Tasks</h2>
+            <p>Four predictive tasks reflecting real-world challenges in sepsis care.</p>
+        </div>
 
         <h3>Static Prediction (Early Observations)</h3>
-        <p>Using only the first 6 hours of the sepsis trajectory to simulate early clinical decision-making:</p>
+        <p style="color: var(--text-secondary); margin-bottom: 12px;">Using only the first 6 hours of the sepsis trajectory:</p>
         <div class="table-wrap">
             <table>
-                <thead>
-                    <tr><th>Task</th><th>Type</th><th>Description</th><th>Metrics</th></tr>
-                </thead>
+                <thead><tr><th>Task</th><th>Type</th><th>Description</th><th>Metrics</th></tr></thead>
                 <tbody>
-                    <tr>
-                        <td><strong>In-Hospital Mortality (IHM)</strong></td>
-                        <td>Binary Classification</td>
-                        <td>Predict whether the patient will survive to discharge</td>
-                        <td>AUROC, AUPRC</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Length of Stay (LOS)</strong></td>
-                        <td>Regression</td>
-                        <td>Predict ICU length of stay in days</td>
-                        <td>RMSE, MAE</td>
-                    </tr>
+                    <tr><td><strong>In-Hospital Mortality</strong></td><td>Classification</td><td>Predict survival to discharge</td><td>AUROC, AUPRC</td></tr>
+                    <tr><td><strong>Length of Stay</strong></td><td>Regression</td><td>Predict ICU length of stay (days)</td><td>RMSE, MAE</td></tr>
                 </tbody>
             </table>
         </div>
 
         <h3>Dynamic Prediction (Rolling Windows)</h3>
-        <p>At each timestep, models observe the previous 6 hours to predict event occurrence within the next 24 hours:</p>
+        <p style="color: var(--text-secondary); margin-bottom: 12px;">At each timestep, observe previous 6h to predict events within next 24h:</p>
         <div class="table-wrap">
             <table>
-                <thead>
-                    <tr><th>Task</th><th>Type</th><th>Description</th><th>Metrics</th></tr>
-                </thead>
+                <thead><tr><th>Task</th><th>Type</th><th>Description</th><th>Metrics</th></tr></thead>
                 <tbody>
-                    <tr>
-                        <td><strong>Vasopressor Requirement (VR)</strong></td>
-                        <td>Binary Classification</td>
-                        <td>Predict whether vasopressors will be needed in the next 24h</td>
-                        <td>AUROC, AUPRC</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Septic Shock (SS)</strong></td>
-                        <td>Binary Classification</td>
-                        <td>Predict septic shock onset within the next 24h</td>
-                        <td>AUROC, AUPRC</td>
-                    </tr>
+                    <tr><td><strong>Vasopressor Requirement</strong></td><td>Classification</td><td>Predict vasopressor need in next 24h</td><td>AUROC, AUPRC</td></tr>
+                    <tr><td><strong>Septic Shock</strong></td><td>Classification</td><td>Predict shock onset within next 24h</td><td>AUROC, AUPRC</td></tr>
                 </tbody>
             </table>
         </div>
@@ -475,16 +646,18 @@
 </section>
 
 <!-- Results -->
-<section>
+<section class="section-alt" id="results">
     <div class="container">
-        <h2>Results</h2>
+        <div class="section-header">
+            <div class="label">Experiments</div>
+            <h2>Results</h2>
+            <p>Transformers consistently outperform baselines. Treatment variables are critical for dynamic tasks.</p>
+        </div>
 
         <h3>With Treatment Variables</h3>
         <div class="table-wrap">
             <table>
-                <thead>
-                    <tr><th>Task</th><th>Metric</th><th>Linear</th><th>LSTM</th><th>Transformer</th></tr>
-                </thead>
+                <thead><tr><th>Task</th><th>Metric</th><th>Linear</th><th>LSTM</th><th>Transformer</th></tr></thead>
                 <tbody>
                     <tr><td>IHM</td><td>AUROC</td><td>0.845</td><td>0.838</td><td class="best">0.863</td></tr>
                     <tr><td>IHM</td><td>AUPRC</td><td>0.512</td><td>0.507</td><td class="best">0.550</td></tr>
@@ -501,9 +674,7 @@
         <h3>Without Treatment Variables</h3>
         <div class="table-wrap">
             <table>
-                <thead>
-                    <tr><th>Task</th><th>Metric</th><th>Linear</th><th>LSTM</th><th>Transformer</th></tr>
-                </thead>
+                <thead><tr><th>Task</th><th>Metric</th><th>Linear</th><th>LSTM</th><th>Transformer</th></tr></thead>
                 <tbody>
                     <tr><td>IHM</td><td>AUROC</td><td>0.844</td><td>0.825</td><td class="best">0.864</td></tr>
                     <tr><td>IHM</td><td>AUPRC</td><td>0.512</td><td>0.487</td><td class="best">0.560</td></tr>
@@ -518,79 +689,68 @@
         </div>
 
         <h3>Key Findings</h3>
-        <ul class="feature-list">
+        <ul class="findings">
             <li><strong>Transformers consistently outperform</strong> linear and LSTM baselines across all tasks</li>
-            <li><strong>Treatment variables are critical for dynamic tasks</strong> &mdash; LSTM gains +0.112 AUROC and +0.235 AUPRC for vasopressor requirement when treatment data is included</li>
+            <li><strong>Treatment variables are critical for dynamic tasks</strong> &mdash; LSTM gains +0.112 AUROC and +0.235 AUPRC for vasopressor requirement</li>
             <li><strong>Static tasks are less affected</strong> by treatment variables due to the limited 6-hour observation window</li>
             <li><strong>Temporal models benefit most</strong> from enriched treatment-aware representation</li>
         </ul>
     </div>
 </section>
 
-<!-- Architecture -->
+<!-- Models -->
 <section>
     <div class="container">
-        <h2>Model Architectures</h2>
-        <div class="cards">
+        <div class="section-header">
+            <div class="label">Models</div>
+            <h2>Model Architectures</h2>
+        </div>
+        <div class="grid-3">
             <div class="card">
                 <h4>Linear Baseline</h4>
-                <p>
-                    Flattens 3D temporal data (N, T, X) to 2D (N, T&times;X) and applies scikit-learn models:
-                    LogisticRegression for classification, Ridge/Lasso/ElasticNet for regression.
-                </p>
+                <p>Flattens 3D temporal data (N, T, X) to 2D (N, T&times;X) and applies scikit-learn models: LogisticRegression for classification, Ridge/Lasso/ElasticNet for regression.</p>
             </div>
             <div class="card">
                 <h4>LSTM</h4>
-                <p>
-                    Two-layer PyTorch LSTM with hidden dimension 64, dropout 0.1, and Adam optimizer.
-                    Uses the final hidden state for prediction. Preserves sequential temporal dependencies.
-                </p>
+                <p>Two-layer PyTorch LSTM with hidden dimension 64, dropout 0.1, and Adam optimizer. Uses the final hidden state for prediction.</p>
             </div>
             <div class="card">
                 <h4>Transformer Encoder</h4>
-                <p>
-                    Multi-layer encoder with 8 self-attention heads, 2 layers, sine/cosine positional encoding,
-                    dropout 0.1, and Adam optimizer. Captures long-range dependencies without recurrence.
-                </p>
+                <p>Multi-layer encoder with 8 self-attention heads, 2 layers, sine/cosine positional encoding, dropout 0.1, and Adam optimizer.</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Getting Started -->
-<section>
+<section class="section-alt" id="start">
     <div class="container">
-        <h2>Getting Started</h2>
-        <p>Requires credentialed access to <a href="https://physionet.org/content/mimiciv/" target="_blank">MIMIC-IV</a> and a local PostgreSQL database. See the <a href="https://github.com/yongh7/MIMIC-sepsis#prerequisites" target="_blank">README</a> for full setup instructions.</p>
+        <div class="section-header">
+            <div class="label">Quick Start</div>
+            <h2>Getting Started</h2>
+            <p>Requires credentialed access to <a href="https://physionet.org/content/mimiciv/" target="_blank" style="color: var(--primary);">MIMIC-IV</a> and a local PostgreSQL database. See the <a href="https://github.com/yongh7/MIMIC-sepsis#prerequisites" target="_blank" style="color: var(--primary);">README</a> for full setup instructions.</p>
+        </div>
 
         <div class="code-block">
-<span style="color:#94a3b8"># 1. Clone the repository</span>
+<span class="comment"># 1. Clone the repository</span>
 git clone https://github.com/yongh7/MIMIC-sepsis.git
 cd MIMIC-sepsis
 
-<span style="color:#94a3b8"># 2. Install dependencies</span>
+<span class="comment"># 2. Install dependencies</span>
 pip install pandas numpy torch scikit-learn matplotlib seaborn psycopg2-binary
 
-<span style="color:#94a3b8"># 3. Extract data from MIMIC-IV PostgreSQL database</span>
-python src/icustays.py
-python src/demog.py
-python src/ce.py
-python src/lab_ce.py
-python src/lab_le.py
-python src/abx.py
-python src/culture.py
-python src/microbio.py
-python src/mechvent.py
-python src/vaso.py
-python src/fluid.py
-python src/preadm_fluid.py
-python src/uo.py
+<span class="comment"># 3. Extract data from MIMIC-IV PostgreSQL database</span>
+python src/icustays.py &amp;&amp; python src/demog.py
+python src/ce.py &amp;&amp; python src/lab_ce.py &amp;&amp; python src/lab_le.py
+python src/abx.py &amp;&amp; python src/culture.py &amp;&amp; python src/microbio.py
+python src/mechvent.py &amp;&amp; python src/vaso.py
+python src/fluid.py &amp;&amp; python src/preadm_fluid.py &amp;&amp; python src/uo.py
 
-<span style="color:#94a3b8"># 4. Preprocess and build trajectories</span>
+<span class="comment"># 4. Preprocess and build trajectories</span>
 python src/init_preprocess.py
 python src/format_traj.py
 
-<span style="color:#94a3b8"># 5. Run benchmarks</span>
+<span class="comment"># 5. Run benchmarks</span>
 python src/benchmark.py
         </div>
     </div>
@@ -599,40 +759,38 @@ python src/benchmark.py
 <!-- Discussion -->
 <section>
     <div class="container">
-        <h2>Discussion &amp; Future Work</h2>
-        <div class="cards">
+        <div class="section-header">
+            <div class="label">Outlook</div>
+            <h2>Discussion &amp; Future Work</h2>
+        </div>
+        <div class="grid-2">
             <div class="card">
                 <h4>Limitations</h4>
-                <p>
-                    Single-institution derivation (Beth Israel Deaconess Medical Center) may affect generalizability.
-                    Retrospective EHR data is subject to documentation inconsistencies and care delivery biases.
-                    Only Sepsis-3 criteria are implemented; newer scoring tools (qSOFA) are not yet integrated.
-                </p>
+                <p>Single-institution derivation (Beth Israel Deaconess Medical Center) may affect generalizability. Retrospective EHR data is subject to documentation inconsistencies. Only Sepsis-3 criteria implemented; newer scoring tools (qSOFA) not yet integrated.</p>
             </div>
             <div class="card">
                 <h4>Future Directions</h4>
-                <p>
-                    Reinforcement learning for treatment personalization.
-                    Incorporation of unstructured clinical notes (discharge summaries, progress notes).
-                    Multimodal modeling combining structured EHR data with free text.
-                </p>
+                <p>Reinforcement learning for treatment personalization. Incorporation of unstructured clinical notes (discharge summaries, progress notes). Multimodal modeling combining structured EHR data with free text.</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Citation -->
-<section>
+<section class="section-alt">
     <div class="container">
-        <h2>Citation</h2>
+        <div class="section-header">
+            <div class="label">Citation</div>
+            <h2>Cite This Work</h2>
+        </div>
         <div class="code-block">
 @inproceedings{huang2025mimic,
-  title={MIMIC-Sepsis: A Curated Benchmark for Modeling and Learning
-         from Sepsis Trajectories in the ICU},
-  author={Huang, Yong and Yang, Zhongqi and Rahmani, Amir M},
-  booktitle={IEEE-EMBS International Conference on Biomedical
-             and Health Informatics 2025},
-  year={2025}
+  title     = {MIMIC-Sepsis: A Curated Benchmark for Modeling and Learning
+               from Sepsis Trajectories in the ICU},
+  author    = {Huang, Yong and Yang, Zhongqi and Rahmani, Amir M},
+  booktitle = {IEEE-EMBS International Conference on Biomedical
+               and Health Informatics 2025},
+  year      = {2025}
 }
         </div>
     </div>
@@ -640,12 +798,12 @@ python src/benchmark.py
 
 <footer>
     <div class="container">
-        <p>
-            <a href="https://arxiv.org/abs/2510.24500">arXiv</a> &middot;
-            <a href="https://github.com/yongh7/MIMIC-sepsis">GitHub</a> &middot;
-            MIT License
-        </p>
-        <p style="margin-top: 8px;">MIMIC-Sepsis &copy; 2025 Huang, Yang &amp; Rahmani</p>
+        <div class="links">
+            <a href="https://arxiv.org/abs/2510.24500">arXiv</a>
+            <a href="https://github.com/yongh7/MIMIC-sepsis">GitHub</a>
+            <a href="https://physionet.org/content/mimiciv/">MIMIC-IV</a>
+        </div>
+        <p>MIMIC-Sepsis &copy; 2025 Huang, Yang &amp; Rahmani &middot; MIT License</p>
     </div>
 </footer>
 
