@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 from typing import Tuple, Dict, List
 import pyprind
 
@@ -80,9 +81,13 @@ class TimeSeriesDataProcessor:
         - Use fixed time window from admission
         - Single binary target per stay
         """
+        # Drop stays where the mortality label is missing (can occur when the
+        # demographics join in format_traj.py does not cover all stay_ids).
+        df = df.dropna(subset=[self.task])
+
         grouped = df.groupby('stay_id')
         features, targets = [], []
-        
+
         print("Processing mortality data...")
         bar = pyprind.ProgBar(len(grouped))
         for _, group in grouped:
@@ -91,7 +96,7 @@ class TimeSeriesDataProcessor:
                 features.append(window_data)
                 targets.append(group[self.task].iloc[-1])
             bar.update()
-        
+
         return np.array(features), np.array(targets)
     
     def _prepare_los_data(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
@@ -234,13 +239,15 @@ class TimeSeriesDataProcessor:
         """
         Normalize features using training data statistics.
         All tasks now use the same normalization approach.
+
+        Mean imputation is applied before scaling to handle residual NaN values
+        that can remain after the ETL pipeline's KNN imputation step (e.g. when
+        a chunk boundary leaves a column entirely NaN for a small number of
+        samples). The imputer is fit on training data only to avoid data leakage.
         """
-        scaler = StandardScaler()
-        
-        # Reshape to 2D for scaling
         train_shape = train_data.shape
         val_shape = val_data.shape
-        
+
         # Reshape to (n_samples * n_timesteps, n_features) if 3D
         if len(train_shape) == 3:
             train_reshaped = train_data.reshape(-1, train_shape[-1])
@@ -248,17 +255,23 @@ class TimeSeriesDataProcessor:
         else:
             train_reshaped = train_data
             val_reshaped = val_data
-            
+
+        # Impute before scaling — fit on train only to prevent leakage
+        imputer = SimpleImputer(strategy="mean")
+        train_reshaped = imputer.fit_transform(train_reshaped)
+        val_reshaped = imputer.transform(val_reshaped)
+
         # Fit on training data and transform both
+        scaler = StandardScaler()
         train_normalized = scaler.fit_transform(train_reshaped)
         val_normalized = scaler.transform(val_reshaped)
-        
+
         # Reshape back to original shape if necessary
         if len(train_shape) == 3:
             train_normalized = train_normalized.reshape(train_shape)
             val_normalized = val_normalized.reshape(val_shape)
-        
+
         self.scalers['features'] = scaler
-        return train_normalized, val_normalized 
+        return train_normalized, val_normalized
     
 
